@@ -3,10 +3,9 @@ using UnityEngine;
 
 namespace SaintTest.CodeBase.Players
 {
-    [RequireComponent(typeof(Rigidbody))]
     public class PlayerMover : MonoBehaviour
     {
-        [SerializeField] private float _speed = 0.5f;
+        [SerializeField] private float _speed = 5f;
         
         private Rigidbody _rigidbody;
         private InputHandler _inputHandler;

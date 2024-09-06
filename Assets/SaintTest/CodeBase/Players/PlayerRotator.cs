@@ -3,10 +3,9 @@ using UnityEngine;
 
 namespace SaintTest.CodeBase.Players
 {
-    [RequireComponent(typeof(Rigidbody))]
     public class PlayerRotator : MonoBehaviour
     {
-        [SerializeField] private float _speed = 2f;
+        [SerializeField] private float _speed = 1f;
         
         private Rigidbody _rigidbody;
         private InputHandler _inputHandler;
