@@ -15,6 +15,7 @@ namespace SaintTest.CodeBase.Players
         private Stack<Item> _items;
 
         private Storage _currentStorage;
+        
         private bool _inTrigger;
         private bool _isRunning;
         
@@ -67,7 +68,7 @@ namespace SaintTest.CodeBase.Players
                 }
                 else if (_currentStorage.Type == StorageType.ToConsume)
                 {
-                    if (_items.Count > 0 && _currentStorage.HasItem(_items.Peek()))
+                    if (_items.Count > 0 && _currentStorage.HasItem(_items.Peek()) && !_currentStorage.IsFull)
                     {
                         Transition toStorage = new Transition(this, _currentStorage, _currentStorage.NextItemPosition);
                         await toStorage.Run(_transitionToken.Token);

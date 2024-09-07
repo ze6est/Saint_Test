@@ -15,6 +15,9 @@ namespace SaintTest.CodeBase.Storages
 
         [field: SerializeField] public StorageType Type { get; private set; }
 
+        public ItemType ItemType => 
+            _item.Type;
+
         public bool IsFull =>
             _items.Count >= _maxCapacity;
 
@@ -31,10 +34,8 @@ namespace SaintTest.CodeBase.Storages
                     = _item.GetComponent<MeshRenderer>().sharedMaterial;
         }
 
-        private void Awake()
-        {
+        private void Awake() => 
             _items = new Stack<Item>();
-        }
 
         public Item Send()
         {

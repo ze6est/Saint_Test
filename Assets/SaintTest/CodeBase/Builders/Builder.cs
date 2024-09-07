@@ -5,6 +5,7 @@ using Cysharp.Threading.Tasks;
 using SaintTest.CodeBase.Items;
 using SaintTest.CodeBase.Storages;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace SaintTest.CodeBase.Builders
 {
@@ -24,6 +25,9 @@ namespace SaintTest.CodeBase.Builders
         private ObjectsPool<Item> _items;
         
         private CancellationTokenSource _cancellationTokenSource;
+
+        public event UnityAction<ItemType> StorageFulled;
+        public event UnityAction<ItemType, ItemType> StorageEmpted;
         
         private void OnValidate()
         {
@@ -43,11 +47,9 @@ namespace SaintTest.CodeBase.Builders
             Run(_cancellationTokenSource.Token).Forget();
         }
         
-        private void OnDestroy()
-        {
+        private void OnDestroy() => 
             _cancellationTokenSource?.Cancel();
-        }
-        
+
         public Item Send() => 
             _newItem;
 
@@ -65,13 +67,22 @@ namespace SaintTest.CodeBase.Builders
                 
                 if (_storageToProduce.IsFull)
                 {
+                    StorageFulled?.Invoke(_storageToProduce.ItemType);
                     continue;
                 }
 
                 if (_storagesToConsume.Length > 0)
                 {
-                    if(_storagesToConsume.Any(storage => storage.IsEmpty))
+                    if (_storagesToConsume.Any(storage => storage.IsEmpty))
+                    {
+                        foreach (Storage storage in _storagesToConsume)
+                        {
+                            if(storage.IsEmpty)
+                                StorageEmpted?.Invoke(_item.Type, storage.ItemType);
+                        }
+                        
                         continue;
+                    }
                 }
 
                 if (_storagesToConsume.Length > 0)
