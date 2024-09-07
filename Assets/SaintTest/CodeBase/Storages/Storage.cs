@@ -21,8 +21,8 @@ namespace SaintTest.CodeBase.Storages
         public bool IsEmpty =>
             _items.Count <= 0;
 
-        public Vector3 NextItemPosition =>
-            _itemsPoint.position + new Vector3(0, _item.Height * _items.Count, 0);
+        public Transform NextItemPosition =>
+            _itemsPoint;
 
         private void OnValidate()
         {
@@ -36,12 +36,20 @@ namespace SaintTest.CodeBase.Storages
             _items = new Stack<Item>();
         }
 
-        public Item Send() =>
-            _items.Pop();
+        public Item Send()
+        {
+            _itemsPoint.position -= new Vector3(0, _item.Height, 0);
+            return _items.Pop();
+        }
 
         public void Take(Item item)
         {
+            _itemsPoint.position += new Vector3(0, _item.Height, 0);
+            item.transform.rotation = transform.rotation;
             _items.Push(item);
         }
+
+        public bool HasItem(Item item) => 
+            _item.Type == item.Type;
     }
 }

@@ -67,7 +67,7 @@ namespace SaintTest.CodeBase.Builders
                 {
                     foreach (Storage storage in _storagesToConsume)
                     {
-                        Transition toBuilder = new Transition(storage, this, _itemsPoint.position);
+                        Transition toBuilder = new Transition(storage, this, _itemsPoint);
 
                         await toBuilder.Run(cancellationToken);
                     }

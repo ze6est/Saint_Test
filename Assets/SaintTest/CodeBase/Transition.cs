@@ -9,11 +9,11 @@ namespace SaintTest.CodeBase
     {
         private ISender _sender;
         private ITaker _taker;
-        private Vector3 _to;
+        private Transform _to;
 
         private float _transferTime = 1f;
         
-        public Transition(ISender sender, ITaker taker, Vector3 to)
+        public Transition(ISender sender, ITaker taker, Transform to)
         {
             _sender = sender;
             _taker = taker;
@@ -31,13 +31,13 @@ namespace SaintTest.CodeBase
             while (elapsedTime < _transferTime)
             {
                 float progress = elapsedTime / _transferTime;
-                item.transform.position = Vector3.Lerp(startPosition, _to, progress);
+                item.transform.position = Vector3.Lerp(startPosition, _to.position, progress);
 
                 await UniTask.Yield(cancellationToken);
                 elapsedTime += Time.deltaTime;
             }
 
-            item.transform.position = _to;
+            item.transform.position = _to.position;
             _taker.Take(item);
         }
     }
