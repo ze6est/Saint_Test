@@ -51,7 +51,9 @@ MonoBehaviour:
   _itemsPoint: {fileID: 2026852704575114280}
   _storageToProduce: {fileID: 0}
   _storagesToConsume: []
-  _createTime: 0
+  _createTime: 1
+  _poolCapacity: 30
+  _isPoolAutoExpand: 1
 --- !u!1 &7233033066447908728
 GameObject:
   m_ObjectHideFlags: 0

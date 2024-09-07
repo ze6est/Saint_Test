@@ -39,13 +39,16 @@ namespace SaintTest.CodeBase.Storages
         public Item Send()
         {
             _itemsPoint.position -= new Vector3(0, _item.Height, 0);
-            return _items.Pop();
+            Item item = _items.Pop();
+            item.transform.parent = null;
+            return item;
         }
 
         public void Take(Item item)
         {
             _itemsPoint.position += new Vector3(0, _item.Height, 0);
             item.transform.rotation = transform.rotation;
+            item.transform.parent = transform;
             _items.Push(item);
         }
 

@@ -16,15 +16,25 @@ namespace SaintTest.CodeBase.Builders
         [SerializeField] private Storage _storageToProduce;
         [SerializeField] private Storage[] _storagesToConsume;
         [SerializeField] private float _createTime;
+        [SerializeField] private int _poolCapacity;
+        [SerializeField] private bool _isPoolAutoExpand;
 
-        private CancellationTokenSource _cancellationTokenSource;
         private Item _newItem;
+
+        private ObjectsPool<Item> _items;
+        
+        private CancellationTokenSource _cancellationTokenSource;
         
         private void OnValidate()
         {
             if(_item != null && _model != null)
                 _model.GetComponent<MeshRenderer>().sharedMaterial
                     = _item.GetComponent<MeshRenderer>().sharedMaterial;
+        }
+
+        private void Awake()
+        {
+            _items = new ObjectsPool<Item>(_item, transform, _isPoolAutoExpand, _poolCapacity);
         }
 
         private void Start()
@@ -43,7 +53,8 @@ namespace SaintTest.CodeBase.Builders
 
         public void Take(Item item)
         {
-            Destroy(item.gameObject);
+            _items.Release(item);
+            item.SetToStartPoint();
         }
 
         private async UniTaskVoid Run(CancellationToken cancellationToken)
@@ -75,7 +86,7 @@ namespace SaintTest.CodeBase.Builders
                 
                 await UniTask.Delay(TimeSpan.FromSeconds(_createTime), false, PlayerLoopTiming.Update, cancellationToken);
                 
-                _newItem = Instantiate(_item, _itemsPoint.position, Quaternion.identity, transform);
+                _newItem = _items.GetFreeObject();
                 
                 Transition toStorage = new Transition(this, _storageToProduce, _storageToProduce.NextItemPosition);
 
