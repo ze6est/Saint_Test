@@ -15,7 +15,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &8495786566225741276
 Transform:
@@ -46,14 +46,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29f42b72a2204323bb7e040010730de7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _item: {fileID: 0}
   _model: {fileID: 8992059685052234489}
-  _itemsPoint: {fileID: 2026852704575114280}
+  _createTime: 0.6
+  _itemPrefab: {fileID: 0}
+  _itemsPool: {fileID: 0}
+  _itemsPosition: {fileID: 2026852704575114280}
   _storageToProduce: {fileID: 0}
   _storagesToConsume: []
-  _createTime: 1
-  _poolCapacity: 30
-  _isPoolAutoExpand: 1
 --- !u!1 &7233033066447908728
 GameObject:
   m_ObjectHideFlags: 0
@@ -64,11 +63,11 @@ GameObject:
   m_Component:
   - component: {fileID: 2026852704575114280}
   m_Layer: 0
-  m_Name: ItemsPoint
+  m_Name: ItemsPosition
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &2026852704575114280
 Transform:
@@ -139,6 +138,10 @@ PrefabInstance:
     - target: {fileID: 8243093806130368721, guid: a969d06011b8e8546b8d11a3c0f146ac, type: 3}
       propertyPath: m_Name
       value: BuilderModel
+      objectReference: {fileID: 0}
+    - target: {fileID: 8243093806130368721, guid: a969d06011b8e8546b8d11a3c0f146ac, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a969d06011b8e8546b8d11a3c0f146ac, type: 3}

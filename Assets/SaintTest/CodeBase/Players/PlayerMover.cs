@@ -1,4 +1,3 @@
-using SaintTest.CodeBase.Inputs;
 using UnityEngine;
 
 namespace SaintTest.CodeBase.Players
@@ -8,20 +7,11 @@ namespace SaintTest.CodeBase.Players
         [SerializeField] private float _speed = 5f;
         
         private Rigidbody _rigidbody;
-        private InputHandler _inputHandler;
 
-        private void Awake()
-        {
-            _inputHandler = new InputHandler();
+        private void Awake() => 
             _rigidbody = GetComponent<Rigidbody>();
-        }
 
-        private void FixedUpdate()
-        {
-            if (_inputHandler.Direction == Vector3.zero)
-                return;
-            
-            _rigidbody.MovePosition(transform.position + _inputHandler.Direction * (_speed * Time.fixedDeltaTime));
-        }
+        public void Move(Vector3 direction, float deltaTime) => 
+            _rigidbody.MovePosition(transform.position + direction * (_speed * deltaTime));
     }
 }

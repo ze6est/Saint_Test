@@ -1,6 +1,6 @@
 using SaintTest.CodeBase.Items;
 
-namespace SaintTest.CodeBase
+namespace SaintTest.CodeBase.Logic
 {
     public interface ISender
     {

@@ -3,63 +3,62 @@ using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using SaintTest.CodeBase.Items;
+using SaintTest.CodeBase.Logic;
+using SaintTest.CodeBase.Pool;
 using SaintTest.CodeBase.Storages;
+using SaintTest.CodeBase.Transitions;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 namespace SaintTest.CodeBase.Builders
 {
     public class Builder : MonoBehaviour, ITaker, ISender
     {
-        [SerializeField] private Item _item;
         [SerializeField] private GameObject _model;
-        [SerializeField] private Transform _itemsPoint;
+        [Space]
+        [SerializeField] private float _createTime;
+        [Header("Item settings")]
+        [SerializeField] private Item _itemPrefab;
+        [SerializeField] private ItemPool _itemsPool;
+        [SerializeField] private Transform _itemsPosition;
+        [Header("Storages settings")]
         [SerializeField] private Storage _storageToProduce;
         [SerializeField] private Storage[] _storagesToConsume;
-        [SerializeField] private float _createTime;
-        [SerializeField] private int _poolCapacity;
-        [SerializeField] private bool _isPoolAutoExpand;
 
         private Item _newItem;
-
-        private ObjectsPool<Item> _items;
         
-        private CancellationTokenSource _cancellationTokenSource;
+        private CancellationTokenSource _runToken;
 
-        public event UnityAction<ItemType> StorageFulled;
-        public event UnityAction<ItemType, ItemType> StorageEmpted;
+        public event UnityAction<ItemData> StorageFulled;
+        public event UnityAction<ItemData, ItemData> StorageEmpted;
         
         private void OnValidate()
         {
-            if(_item != null && _model != null)
+            if(_itemPrefab != null && _model != null)
                 _model.GetComponent<MeshRenderer>().sharedMaterial
-                    = _item.GetComponent<MeshRenderer>().sharedMaterial;
+                    = _itemPrefab.GetComponent<MeshRenderer>().sharedMaterial;
         }
 
-        private void Awake()
-        {
-            _items = new ObjectsPool<Item>(_item, transform, _isPoolAutoExpand, _poolCapacity);
-        }
+        private void Awake() => 
+            _runToken = new CancellationTokenSource();
 
-        private void Start()
-        {
-            _cancellationTokenSource = new CancellationTokenSource();
-            Run(_cancellationTokenSource.Token).Forget();
-        }
-        
+        private void Start() => 
+            Run(_runToken.Token).Forget();
+
         private void OnDestroy() => 
-            _cancellationTokenSource?.Cancel();
+            _runToken?.Cancel();
 
         public Item Send() => 
             _newItem;
 
         public void Take(Item item)
         {
-            _items.Release(item);
-            item.SetToStartPoint();
+            item.transform.parent = transform;
+            _itemsPool.Return(item);
         }
 
-        private async UniTaskVoid Run(CancellationToken cancellationToken)
+        private async UniTaskVoid Run(CancellationToken token)
         {
             while (true)
             {
@@ -67,7 +66,7 @@ namespace SaintTest.CodeBase.Builders
                 
                 if (_storageToProduce.IsFull)
                 {
-                    StorageFulled?.Invoke(_storageToProduce.ItemType);
+                    StorageFulled?.Invoke(_storageToProduce.Item);
                     continue;
                 }
 
@@ -78,7 +77,7 @@ namespace SaintTest.CodeBase.Builders
                         foreach (Storage storage in _storagesToConsume)
                         {
                             if(storage.IsEmpty)
-                                StorageEmpted?.Invoke(_item.Type, storage.ItemType);
+                                StorageEmpted?.Invoke(_itemPrefab.ItemData, storage.Item);
                         }
                         
                         continue;
@@ -89,19 +88,20 @@ namespace SaintTest.CodeBase.Builders
                 {
                     foreach (Storage storage in _storagesToConsume)
                     {
-                        Transition toBuilder = new Transition(storage, this, _itemsPoint);
+                        Transition toBuilder = new Transition(storage, this, _itemsPosition);
 
-                        await toBuilder.Run(cancellationToken);
+                        await toBuilder.Run(token);
                     }
                 }
                 
-                await UniTask.Delay(TimeSpan.FromSeconds(_createTime), false, PlayerLoopTiming.Update, cancellationToken);
-                
-                _newItem = _items.GetFreeObject();
+                await UniTask.Delay(TimeSpan.FromSeconds(_createTime), false, PlayerLoopTiming.Update, token);
+
+                _newItem = _itemsPool.Get(_itemPrefab);
+                _newItem.transform.position = _itemsPosition.position;
                 
                 Transition toStorage = new Transition(this, _storageToProduce, _storageToProduce.NextItemPosition);
 
-                await toStorage.Run(cancellationToken);
+                await toStorage.Run(token);
             }
         }
     }

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace SaintTest.CodeBase
+namespace SaintTest.CodeBase.Logic
 {
     public class CameraFollow : MonoBehaviour
     {

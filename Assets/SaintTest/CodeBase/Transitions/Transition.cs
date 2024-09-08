@@ -1,17 +1,18 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using SaintTest.CodeBase.Items;
+using SaintTest.CodeBase.Logic;
 using UnityEngine;
 
-namespace SaintTest.CodeBase
+namespace SaintTest.CodeBase.Transitions
 {
     public class Transition
     {
-        private ISender _sender;
-        private ITaker _taker;
-        private Transform _to;
+        private readonly ISender _sender;
+        private readonly ITaker _taker;
+        private readonly Transform _to;
 
-        private float _transferTime = 1f;
+        private readonly float _transferTime = 0.25f;
         
         public Transition(ISender sender, ITaker taker, Transform to)
         {
@@ -20,7 +21,7 @@ namespace SaintTest.CodeBase
             _to = to;
         }
 
-        public async UniTask Run(CancellationToken cancellationToken)
+        public async UniTask Run(CancellationToken token)
         {
             float elapsedTime = 0f;
 
@@ -33,7 +34,7 @@ namespace SaintTest.CodeBase
                 float progress = elapsedTime / _transferTime;
                 item.transform.position = Vector3.Lerp(startPosition, _to.position, progress);
 
-                await UniTask.Yield(cancellationToken);
+                await UniTask.Yield(token);
                 elapsedTime += Time.deltaTime;
             }
 

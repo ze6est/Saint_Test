@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2866963308034095997}
   - component: {fileID: 3367228900688245304}
   m_Layer: 0
-  m_Name: ItemWood
+  m_Name: Wood
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -96,5 +96,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1f51cd3229d4606a1432c1162d07bf0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Type>k__BackingField: 0
-  <Height>k__BackingField: 0.5
+  <ItemData>k__BackingField: {fileID: 11400000, guid: dca78bb6d602d7c41b7d70700d82b8e5, type: 2}

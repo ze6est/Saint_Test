@@ -2,31 +2,38 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using SaintTest.CodeBase.Items;
+using SaintTest.CodeBase.Logic;
 using SaintTest.CodeBase.Storages;
+using SaintTest.CodeBase.Transitions;
 using UnityEngine;
 
 namespace SaintTest.CodeBase.Players
 {
     public class PlayerStorage : MonoBehaviour, ISender, ITaker
     {
-        [SerializeField] private int _maxCapacity;
         [SerializeField] private Transform _itemsPoint;
+        [Space]
+        [SerializeField] private int _maxCapacity;
 
+        private Transform _transform;
+        
         private Stack<Item> _items;
 
         private Storage _currentStorage;
         
-        private bool _inTrigger;
         private bool _isRunning;
         
+        private UniTask _runTask;
         private CancellationTokenSource _runToken;
         private CancellationTokenSource _transitionToken;
 
         private void Awake()
         {
+            _transform = transform;
             _items = new Stack<Item>();
             
             _transitionToken = new CancellationTokenSource();
+            _runToken = new CancellationTokenSource();
         }
 
         private void OnTriggerStay(Collider other)
@@ -34,7 +41,6 @@ namespace SaintTest.CodeBase.Players
             if (other.TryGetComponent(out Storage storage))
             {
                 _currentStorage = storage;
-                _inTrigger = true;
                 
                 if (!_isRunning)
                 {
@@ -46,17 +52,36 @@ namespace SaintTest.CodeBase.Players
         }
         
         private void OnTriggerExit(Collider other) => 
-            _inTrigger = false;
+            _currentStorage = null;
 
         private void OnDestroy()
         {
             _runToken?.Cancel();
-            _transitionToken.Cancel();
+            _transitionToken?.Cancel();
+        }
+        
+        public Item Send()
+        {
+            Item item = _items.Pop();
+            _itemsPoint.position -= new Vector3(0, item.ItemData.Height, 0);
+            return item;
         }
 
-        private async UniTask Run(CancellationToken cancellationToken)
+        public void Take(Item item)
         {
-            while (_inTrigger)
+            Transform itemTransform = item.transform;
+            
+            _itemsPoint.position += new Vector3(0, item.ItemData.Height, 0);
+            
+            itemTransform.parent = _transform;
+            itemTransform.rotation = _transform.rotation;
+            
+            _items.Push(item);
+        }
+
+        private async UniTask Run(CancellationToken token)
+        {
+            while (_currentStorage != null)
             {
                 if (_currentStorage.Type == StorageType.ToProduce)
                 {
@@ -75,27 +100,11 @@ namespace SaintTest.CodeBase.Players
                     }
                 }
                 
-                await UniTask.Yield(cancellationToken);
+                await UniTask.Yield(token);
             }
             
-            _runToken?.Cancel();
             _isRunning = false;
-        }
-
-        public Item Send()
-        {
-            Item item = _items.Pop();
-            item.transform.parent = null;
-            _itemsPoint.position -= new Vector3(0, item.Height, 0);
-            return item;
-        }
-
-        public void Take(Item item)
-        {
-            _itemsPoint.position += new Vector3(0, item.Height, 0);
-            item.transform.parent = transform;
-            item.transform.rotation = transform.rotation;
-            _items.Push(item);
+            _runToken?.Cancel();
         }
     }
 }

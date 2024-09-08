@@ -16,7 +16,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &4804524492162810210
 Transform:
@@ -47,10 +47,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6328dabf011946308949601fee2f7b83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _item: {fileID: 0}
   _model: {fileID: 4428025121272260699}
-  _maxCapacity: 0
   _itemsPoint: {fileID: 6073984113254522483}
+  _item: {fileID: 0}
+  _maxCapacity: 10
   <Type>k__BackingField: 0
 --- !u!65 &4686729373325741502
 BoxCollider:
@@ -79,7 +79,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &6073984113254522483
 Transform:
@@ -150,6 +150,10 @@ PrefabInstance:
     - target: {fileID: 7707154971527805307, guid: ed5c395ea98397f4bae66c5dd5f05015, type: 3}
       propertyPath: m_Name
       value: StorageModel
+      objectReference: {fileID: 0}
+    - target: {fileID: 7707154971527805307, guid: ed5c395ea98397f4bae66c5dd5f05015, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ed5c395ea98397f4bae66c5dd5f05015, type: 3}

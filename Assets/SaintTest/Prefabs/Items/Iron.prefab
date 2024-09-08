@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 3337437612768967358}
   - component: {fileID: 8408226362873015693}
   - component: {fileID: 2866963308034095997}
-  - component: {fileID: 6447627760965900206}
+  - component: {fileID: 6629195608850541647}
   m_Layer: 0
-  m_Name: ItemStone
+  m_Name: Iron
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -62,7 +62,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 289023ea03c98d3489039763194c671a, type: 2}
+  - {fileID: 2100000, guid: 7fa180026487a4b46bddf7ae90a213b6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -84,7 +84,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &6447627760965900206
+--- !u!114 &6629195608850541647
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -96,5 +96,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1f51cd3229d4606a1432c1162d07bf0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Type>k__BackingField: 1
-  <Height>k__BackingField: 0.5
+  <ItemData>k__BackingField: {fileID: 11400000, guid: ac00599aedfe8b24490cbe162ee71048, type: 2}
