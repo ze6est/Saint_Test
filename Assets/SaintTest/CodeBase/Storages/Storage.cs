@@ -7,9 +7,11 @@ namespace SaintTest.CodeBase.Storages
     public class Storage : MonoBehaviour, IStorage
     {
         [SerializeField] private GameObject _model;
+        
         [Header("Item settings")]
         [SerializeField] private Transform _itemsPoint;
         [SerializeField] private Item _item;
+        
         [Space]
         [SerializeField] private int _maxCapacity;
         

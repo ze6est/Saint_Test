@@ -8,7 +8,7 @@ namespace SaintTest.CodeBase.Players
     {
         private readonly InputHandler _inputHandler;
         private readonly PlayerMover _playerMover;
-        
+
         private readonly PlayerRotator _playerRotator;
 
         public PlayerController(InputHandler inputHandler, PlayerMover playerMover, PlayerRotator playerRotator)

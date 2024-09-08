@@ -13,6 +13,7 @@ namespace SaintTest.CodeBase.Installers
     public class GameInstaller : MonoInstaller
     {
         [SerializeField] private List<Builder> _builders;
+        
         [Header("Item settings")]
         [SerializeField] private List<Item> _itemPrefabs;
         [SerializeField] private int _countItemInPool = 10;

@@ -9,7 +9,6 @@ using SaintTest.CodeBase.Storages;
 using SaintTest.CodeBase.Transitions;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Serialization;
 using Zenject;
 
 namespace SaintTest.CodeBase.Builders
@@ -17,44 +16,49 @@ namespace SaintTest.CodeBase.Builders
     public class Builder : MonoBehaviour, ITaker, ISender
     {
         [SerializeField] private GameObject _model;
-        [Space]
+        
+        [Space] 
         [SerializeField] private float _createTime;
+
         [Header("Item settings")]
         [SerializeField] private Item _itemPrefab;
+
         [SerializeField] private Transform _itemsPosition;
-        [Header("Storages settings")]
-        [SerializeField] private Storage _storageToProduce;
+
+        [Header("Storages settings")] [SerializeField]
+        private Storage _storageToProduce;
+
         [SerializeField] private Storage[] _storagesToConsume;
 
         private ItemPool _itemsPool;
         private Item _newItem;
-        
+
         private CancellationTokenSource _runToken;
 
         public event UnityAction<ItemData> StorageFulled;
         public event UnityAction<ItemData, ItemData> StorageEmpted;
-        
+
         private void OnValidate()
         {
-            if(_itemPrefab != null && _model != null)
+            if (_itemPrefab != null && _model != null)
                 _model.GetComponent<MeshRenderer>().sharedMaterial
                     = _itemPrefab.GetComponent<MeshRenderer>().sharedMaterial;
         }
 
         [Inject]
-        public void Construct(ItemPool itemsPool) => 
+        public void Construct(ItemPool itemsPool) =>
             _itemsPool = itemsPool;
 
-        private void Awake() => 
+        private void Awake() =>
             _runToken = new CancellationTokenSource();
 
-        private void Start() => 
+        private void Start() =>
             Run(_runToken.Token).Forget();
 
-        private void OnDestroy() => 
+        private void OnDestroy() =>
             _runToken?.Cancel();
 
-        public Item Send() => 
+        public Item Send() =>
             _newItem;
 
         public void Take(Item item)
@@ -68,7 +72,7 @@ namespace SaintTest.CodeBase.Builders
             while (true)
             {
                 await UniTask.Yield();
-                
+
                 if (_storageToProduce.IsFull)
                 {
                     StorageFulled?.Invoke(_storageToProduce.Item);
@@ -81,10 +85,10 @@ namespace SaintTest.CodeBase.Builders
                     {
                         foreach (Storage storage in _storagesToConsume)
                         {
-                            if(storage.IsEmpty)
+                            if (storage.IsEmpty)
                                 StorageEmpted?.Invoke(_itemPrefab.ItemData, storage.Item);
                         }
-                        
+
                         continue;
                     }
                 }
@@ -98,12 +102,12 @@ namespace SaintTest.CodeBase.Builders
                         await toBuilder.Run(token);
                     }
                 }
-                
+
                 await UniTask.Delay(TimeSpan.FromSeconds(_createTime), false, PlayerLoopTiming.Update, token);
 
                 _newItem = _itemsPool.Get(_itemPrefab);
                 _newItem.transform.position = _itemsPosition.position;
-                
+
                 Transition toStorage = new Transition(this, _storageToProduce, _storageToProduce.NextItemPosition);
 
                 await toStorage.Run(token);
