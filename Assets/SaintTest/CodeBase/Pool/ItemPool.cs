@@ -5,24 +5,23 @@ using UnityEngine;
 
 namespace SaintTest.CodeBase.Pool
 {
-    public class ItemPool : MonoBehaviour
+    public class ItemPool
     {
-        [SerializeField] private List<Item> _items;
-        [SerializeField] private int _count;
+        private readonly List<Item> _items;
+        private readonly ItemFactory _factory;
+        private readonly Transform _container;
 
-        private ItemFactory _factory;
-        
-        private void Awake()
+        public ItemPool(List<Item> prefabs, int count, ItemFactory factory, Transform container)
         {
             _items = new();
-            _factory = new ItemFactory();
-
-            foreach (Item item in _items)
+            _factory = factory;
+            _container = container;
+            
+            foreach (Item item in prefabs)
             {
-                for (int i = 0; i < _count; i++)
+                for (int i = 0; i < count; i++)
                 {
-                    Release(item);
-                    _items.Add(CreateItem(item));
+                    Release(CreateItem(item));
                 }
             }
         }
@@ -33,25 +32,32 @@ namespace SaintTest.CodeBase.Pool
             {
                 if (!_items[i].gameObject.activeInHierarchy && _items[i].ItemData == item.ItemData)
                 {
-                    _items[i].gameObject.SetActive(true); 
-                    return _items[i];
+                    Item current = _items[i];
+                    Activate(current);
+                    
+                    return current;
                 }
             }
 
-            return CreateItem(item);
+            Item newItem = CreateItem(item);
+            Activate(newItem);
+            
+            return newItem;
         }
         
-        public void Return(Item item)
-        {
+        public void Release(Item item) => 
             item.gameObject.SetActive(false);
+
+        private Item CreateItem(Item item)
+        {
+            Item newItem = _factory.Create(item, _container);
             
-            _items.Add(item);
+            _items.Add(newItem);
+
+            return newItem;
         }
 
-        private Item CreateItem(Item item) => 
-            _factory.Create(item, transform);
-
-        private void Release(Item item) => 
-            item.gameObject.SetActive(false);
+        private void Activate(Item item) => 
+            item.gameObject.SetActive(true);
     }
 }

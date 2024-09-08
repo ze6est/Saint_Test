@@ -10,6 +10,7 @@ using SaintTest.CodeBase.Transitions;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
+using Zenject;
 
 namespace SaintTest.CodeBase.Builders
 {
@@ -20,12 +21,12 @@ namespace SaintTest.CodeBase.Builders
         [SerializeField] private float _createTime;
         [Header("Item settings")]
         [SerializeField] private Item _itemPrefab;
-        [SerializeField] private ItemPool _itemsPool;
         [SerializeField] private Transform _itemsPosition;
         [Header("Storages settings")]
         [SerializeField] private Storage _storageToProduce;
         [SerializeField] private Storage[] _storagesToConsume;
 
+        private ItemPool _itemsPool;
         private Item _newItem;
         
         private CancellationTokenSource _runToken;
@@ -39,6 +40,10 @@ namespace SaintTest.CodeBase.Builders
                 _model.GetComponent<MeshRenderer>().sharedMaterial
                     = _itemPrefab.GetComponent<MeshRenderer>().sharedMaterial;
         }
+
+        [Inject]
+        public void Construct(ItemPool itemsPool) => 
+            _itemsPool = itemsPool;
 
         private void Awake() => 
             _runToken = new CancellationTokenSource();
@@ -55,7 +60,7 @@ namespace SaintTest.CodeBase.Builders
         public void Take(Item item)
         {
             item.transform.parent = transform;
-            _itemsPool.Return(item);
+            _itemsPool.Release(item);
         }
 
         private async UniTaskVoid Run(CancellationToken token)

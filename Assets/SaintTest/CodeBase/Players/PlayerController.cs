@@ -1,19 +1,24 @@
 using SaintTest.CodeBase.Inputs;
 using UnityEngine;
+using Zenject;
 
 namespace SaintTest.CodeBase.Players
 {
-    public class PlayerController : MonoBehaviour
+    public class PlayerController : IFixedTickable
     {
-        [SerializeField] private PlayerMover _playerMover;
-        [SerializeField] private PlayerRotator _playerRotator;
+        private readonly InputHandler _inputHandler;
+        private readonly PlayerMover _playerMover;
         
-        private InputHandler _inputHandler;
+        private readonly PlayerRotator _playerRotator;
 
-        private void Awake() => 
-            _inputHandler = new InputHandler();
+        public PlayerController(InputHandler inputHandler, PlayerMover playerMover, PlayerRotator playerRotator)
+        {
+            _inputHandler = inputHandler;
+            _playerMover = playerMover;
+            _playerRotator = playerRotator;
+        }
 
-        private void FixedUpdate()
+        public void FixedTick()
         {
             Vector3 moveDirection = _inputHandler.Direction;
 
