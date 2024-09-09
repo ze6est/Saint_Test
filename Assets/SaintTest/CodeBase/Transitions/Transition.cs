@@ -1,5 +1,6 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using SaintTest.CodeBase.Configs;
 using SaintTest.CodeBase.Items;
 using SaintTest.CodeBase.Logic;
 using UnityEngine;
@@ -12,7 +13,7 @@ namespace SaintTest.CodeBase.Transitions
         private readonly ITaker _taker;
         private readonly Transform _to;
 
-        private readonly float _transferTime = 0.25f;
+        private readonly float _transferTime = GlobalGameConfigs.TRANSFER_TIME;
         
         public Transition(ISender sender, ITaker taker, Transform to)
         {
