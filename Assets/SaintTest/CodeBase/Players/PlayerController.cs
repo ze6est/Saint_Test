@@ -4,12 +4,14 @@ using Zenject;
 
 namespace SaintTest.CodeBase.Players
 {
-    public class PlayerController : IFixedTickable
+    public class PlayerController : ITickable, IFixedTickable
     {
         private readonly InputHandler _inputHandler;
         private readonly PlayerMover _playerMover;
 
         private readonly PlayerRotator _playerRotator;
+
+        private Vector3 _moveDirection;
 
         public PlayerController(InputHandler inputHandler, PlayerMover playerMover, PlayerRotator playerRotator)
         {
@@ -17,16 +19,17 @@ namespace SaintTest.CodeBase.Players
             _playerMover = playerMover;
             _playerRotator = playerRotator;
         }
+        
+        public void Tick() => 
+            _moveDirection = _inputHandler.Direction;
 
         public void FixedTick()
         {
-            Vector3 moveDirection = _inputHandler.Direction;
+            if (_moveDirection != Vector3.zero)
+                _playerMover.Move(_moveDirection, Time.fixedDeltaTime);
 
-            if (moveDirection != Vector3.zero)
-                _playerMover.Move(moveDirection, Time.fixedDeltaTime);
-
-            if (moveDirection.magnitude > 0.1f)
-                _playerRotator.Rotate(moveDirection, Time.fixedDeltaTime);
+            if (_moveDirection.magnitude > 0.1f)
+                _playerRotator.Rotate(_moveDirection, Time.fixedDeltaTime);
         }
     }
 }
